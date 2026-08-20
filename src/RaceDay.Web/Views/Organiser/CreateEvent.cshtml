@@ -1,0 +1,92 @@
+@model EventFormViewModel
+@{
+    ViewData["Title"] = "Create New Race Event";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Events" class="text-info text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">Create New Event</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="rd-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-secondary">
+                    <div class="rounded-circle bg-dark border border-info d-flex align-items-center justify-content-center text-info" style="width:50px; height:50px;">
+                        <i class="bi bi-calendar-plus fs-3"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-white mb-0">Publish New Race Event</h3>
+                        <p class="text-muted small mb-0">Set up race information and upload an event marketing banner</p>
+                    </div>
+                </div>
+
+                <form asp-action="CreateEvent" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label text-light small fw-bold">Event Title</label>
+                        <input asp-for="Title" class="form-control bg-dark border-secondary text-white" placeholder="e.g. Cape Peninsula Coastal Marathon" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label text-light small fw-bold">Event Description</label>
+                        <textarea asp-for="Description" class="form-control bg-dark border-secondary text-white" rows="4" placeholder="Comprehensive race details, route description, hydration stations..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="EventDate" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="EventDate" class="form-control bg-dark border-secondary text-white" type="datetime-local" />
+                            <span asp-validation-for="EventDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Location" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="Location" class="form-control bg-dark border-secondary text-white" placeholder="e.g. Camps Bay Promenade, Cape Town" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="DistanceKm" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="DistanceKm" class="form-control bg-dark border-secondary text-white" step="0.1" />
+                            <span asp-validation-for="DistanceKm" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EventType" class="form-label text-light small fw-bold"></label>
+                            <select asp-for="EventType" class="form-select bg-dark border-secondary text-white">
+                                <option value="Run">Running (Run)</option>
+                                <option value="Walk">Walking (Walk)</option>
+                                <option value="Cycle">Cycling (Cycle)</option>
+                            </select>
+                            <span asp-validation-for="EventType" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Azure Blob Storage Banner Upload -->
+                    <div class="mb-4 p-3 bg-dark rounded border border-secondary">
+                        <label asp-for="BannerImage" class="form-label text-light small fw-bold mb-1">
+                            <i class="bi bi-cloud-arrow-up text-info me-1"></i> Event Banner Image (Azure Blob Storage)
+                        </label>
+                        <input asp-for="BannerImage" class="form-control bg-dark border-secondary text-white" type="file" accept="image/*" />
+                        <small class="text-muted d-block mt-1">Uploaded directly to Azure Blob Storage cloud container. JPG, PNG, WebP up to 10MB.</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                        <a asp-action="Events" class="btn btn-outline-secondary text-light">Cancel</a>
+                        <button type="submit" class="btn btn-sport-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i> Save & Configure Categories
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

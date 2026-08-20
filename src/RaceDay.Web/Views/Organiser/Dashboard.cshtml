@@ -1,0 +1,129 @@
+@model OrganiserDashboardDto
+@{
+    ViewData["Title"] = "Organiser Command Dashboard";
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-speedometer2 me-2 text-danger"></i>Organiser Operations Dashboard</h2>
+            <p class="text-muted small mb-0">High-level event logistics, registration metrics, and race day command</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="CreateEvent" class="btn btn-sport-primary btn-sm px-3">
+                <i class="bi bi-plus-lg me-1"></i> Create New Event
+            </a>
+            <a asp-action="Events" class="btn btn-outline-info btn-sm px-3">
+                <i class="bi bi-kanban me-1"></i> Manage All Events
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Metric Tiles -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-tile">
+                <div class="kpi-label">Managed Events</div>
+                <div class="kpi-value">@Model.TotalEvents</div>
+                <small class="text-muted"><i class="bi bi-flag me-1"></i> Total scheduled</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-tile kpi-cyan">
+                <div class="kpi-label">Total Enrolments</div>
+                <div class="kpi-value text-info">@Model.TotalEnrolments</div>
+                <small class="text-muted"><i class="bi bi-people me-1"></i> Registered athletes</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-tile kpi-gold">
+                <div class="kpi-label">Upcoming Races</div>
+                <div class="kpi-value text-warning">@Model.UpcomingEventsCount</div>
+                <small class="text-muted"><i class="bi bi-hourglass-top me-1"></i> Active registration</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-tile kpi-coral">
+                <div class="kpi-label">Gross Revenue</div>
+                <div class="kpi-value text-success">R @Model.TotalRevenue.ToString("N0")</div>
+                <small class="text-muted"><i class="bi bi-cash-stack me-1"></i> Confirmed entries</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events Section -->
+    <div class="rd-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-white mb-0"><i class="bi bi-calendar3 me-2 text-info"></i>Active & Upcoming Races</h4>
+            <a asp-action="Events" class="text-info small text-decoration-none">View All Events &rarr;</a>
+        </div>
+
+        @if (Model.UpcomingEvents.Count == 0)
+        {
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-calendar-check fs-2 d-block mb-2"></i>
+                <p>No upcoming events currently scheduled.</p>
+                <a asp-action="CreateEvent" class="btn btn-sport-primary btn-sm">Create an Event</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table rd-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Event Title</th>
+                            <th>Discipline</th>
+                            <th>Date & Location</th>
+                            <th>Enrolments</th>
+                            <th>Status</th>
+                            <th>Quick Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ev in Model.UpcomingEvents)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-white">@ev.Title</strong>
+                                    <small class="text-muted d-block">@ev.DistanceKm km</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary text-info">@ev.EventType</span>
+                                </td>
+                                <td>
+                                    <div><i class="bi bi-calendar3 me-1 text-info"></i> @ev.EventDate.ToString("ddd, dd MMM yyyy")</div>
+                                    <small class="text-muted"><i class="bi bi-geo-alt me-1 text-danger"></i> @ev.Location</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary text-light fs-6 px-3 py-1">
+                                        <i class="bi bi-person-fill me-1 text-info"></i> @ev.TotalEnrolments
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @(ev.Status == "Completed" ? "bg-secondary" : "bg-success")">
+                                        @ev.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Enrolments" asp-route-eventId="@ev.EventId" class="btn btn-outline-info" title="View Athletes">
+                                            <i class="bi bi-people"></i>
+                                        </a>
+                                        <a asp-action="Categories" asp-route-eventId="@ev.EventId" class="btn btn-outline-secondary text-light" title="Categories">
+                                            <i class="bi bi-diagram-3"></i>
+                                        </a>
+                                        <a asp-action="CaptureResults" asp-route-eventId="@ev.EventId" class="btn btn-sport-primary" title="Capture Results">
+                                            <i class="bi bi-trophy"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

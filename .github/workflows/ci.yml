@@ -1,0 +1,47 @@
+name: RaceDay CI/CD Automated Build & Test Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  validate-part1-structure:
+    name: "Part 1: Validate Docs & Planning Artifacts"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Documentation Structure
+        run: |
+          echo "=== Verifying Part 1 Documentation Deliverables ==="
+          test -d docs || (echo "ERROR: /docs folder missing" && exit 1)
+          test -f docs/RaceDay_ERD.png || (echo "ERROR: RaceDay_ERD.png missing" && exit 1)
+          test -f docs/API_Endpoint_Plan.md || (echo "ERROR: API_Endpoint_Plan.md missing" && exit 1)
+          test -f docs/RaceDay_Schema_And_Seed.sql || (echo "ERROR: RaceDay_Schema_And_Seed.sql missing" && exit 1)
+          echo "All Part 1 planning artifacts verified successfully."
+
+  build-and-test:
+    name: "Part 2 & Part 3: Build & Unit Test Suite"
+    needs: validate-part1-structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore RaceDay.sln
+
+      - name: Build Solution (API, MVC Web, Tests)
+        run: dotnet build RaceDay.sln --no-restore --configuration Release
+
+      - name: Execute Unit Tests (Jarred Test Suite)
+        run: dotnet test RaceDay.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test_results.trx"

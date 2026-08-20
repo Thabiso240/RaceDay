@@ -1,0 +1,76 @@
+@model List<PersonalResultDto>
+@{
+    ViewData["Title"] = "My Race History & Results";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-trophy-fill text-warning me-2"></i>My Official Race Results</h2>
+            <p class="text-muted small mb-0">Verified finish times and position rankings captured by event directors</p>
+        </div>
+        <span class="badge bg-dark border border-secondary text-info fs-6 px-3 py-2">
+            <i class="bi bi-award me-1 text-warning"></i> @Model.Count Completed Races
+        </span>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="rd-card p-5 text-center">
+            <i class="bi bi-stopwatch fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="text-white">No Race Results Published Yet</h4>
+            <p class="text-muted mb-3">Once you complete an entered race and the Organiser captures and publishes the official timing data, your verified results will appear here automatically.</p>
+            <a asp-action="MyEvents" class="btn btn-sport-outline btn-sm">Check Enrolled Events</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var res in Model)
+            {
+                <div class="col-md-6 col-lg-6">
+                    <div class="rd-card p-4 h-100 border-start border-4 border-warning">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="badge bg-dark border border-secondary text-info mb-1">
+                                    @res.EventType &bull; @res.DistanceKm km
+                                </span>
+                                <h4 class="text-white fw-bold mb-0">@res.EventTitle</h4>
+                            </div>
+                            <span class="badge bg-black border border-warning text-warning fs-6 px-3 py-1">
+                                Bib #@res.BibNumber
+                            </span>
+                        </div>
+
+                        <div class="row g-2 mb-3 bg-dark rounded p-3 border border-secondary">
+                            <div class="col-6">
+                                <small class="text-muted text-uppercase d-block fw-bold" style="font-size: 0.75rem;">Official Finish Time</small>
+                                <span class="fs-4 fw-bold text-info font-monospace">
+                                    <i class="bi bi-stopwatch me-1 text-info"></i>@res.FinishTime
+                                </span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted text-uppercase d-block fw-bold" style="font-size: 0.75rem;">Finishing Position</small>
+                                <span class="fs-5 fw-bold text-warning d-block">
+                                    <i class="bi bi-trophy me-1 text-warning"></i>@res.PositionDisplay
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center text-muted small pt-2 border-top border-secondary">
+                            <span><i class="bi bi-tag me-1"></i> Category: <strong>@res.CategoryName</strong></span>
+                            <span><i class="bi bi-calendar3 me-1"></i> @res.EventDate.ToString("dd MMM yyyy")</span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(res.Notes))
+                        {
+                            <div class="mt-2 pt-2 border-top border-secondary small text-info">
+                                <i class="bi bi-chat-left-quote me-1"></i> <em>@res.Notes</em>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

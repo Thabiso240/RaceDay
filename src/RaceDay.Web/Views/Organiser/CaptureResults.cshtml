@@ -1,0 +1,105 @@
+@model CaptureResultsViewModel
+@{
+    ViewData["Title"] = $"Capture Results - {Model.EventTitle}";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Events" class="text-info text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">Capture Results: @Model.EventTitle</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-stopwatch-fill me-2 text-warning"></i>Capture & Publish Race Results</h2>
+            <p class="text-muted small mb-0">Record verified finish times. System automatically ranks positions and marks event completed.</p>
+        </div>
+        <a asp-action="Events" class="btn btn-outline-secondary btn-sm text-light">
+            <i class="bi bi-arrow-left me-1"></i> Back to Events
+        </a>
+    </div>
+
+    @if (Model.Entries.Count == 0)
+    {
+        <div class="rd-card p-5 text-center">
+            <i class="bi bi-person-x fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="text-white">No Confirmed Athletes Found for This Event</h4>
+            <p class="text-muted">Athletes must have a 'Confirmed' enrolment status before official finishing results can be recorded.</p>
+            <a asp-action="Enrolments" asp-route-eventId="@Model.EventId" class="btn btn-outline-info btn-sm">Manage Enrolments</a>
+        </div>
+    }
+    else
+    {
+        <div class="rd-card p-4">
+            <div class="alert alert-dark border border-secondary text-info mb-4">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                Enter finish times using format <code>HH:mm:ss</code> (e.g. <code>00:42:15</code> for 42 mins 15 secs, or <code>01:24:35</code>). The API calculates finishing positions automatically in ascending time order.
+            </div>
+
+            <form asp-action="CaptureResults" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="EventId" />
+                <input type="hidden" asp-for="EventTitle" />
+
+                <div class="table-responsive mb-4">
+                    <table class="table rd-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Bib #</th>
+                                <th>Athlete Name</th>
+                                <th>Category</th>
+                                <th style="min-width: 180px;">Finish Time (HH:mm:ss)</th>
+                                <th>Performance Notes / Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Entries.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="hidden" name="Entries[@i].EnrolmentId" value="@Model.Entries[i].EnrolmentId" />
+                                        <input type="hidden" name="Entries[@i].AthleteName" value="@Model.Entries[i].AthleteName" />
+                                        <input type="hidden" name="Entries[@i].BibNumber" value="@Model.Entries[i].BibNumber" />
+                                        <input type="hidden" name="Entries[@i].CategoryName" value="@Model.Entries[i].CategoryName" />
+
+                                        <span class="badge bg-dark border border-warning text-warning fs-6 px-3 py-1 font-monospace">
+                                            #@Model.Entries[i].BibNumber
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-white">@Model.Entries[i].AthleteName</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-dark border border-secondary text-info">
+                                            @Model.Entries[i].CategoryName
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-dark border-secondary text-warning"><i class="bi bi-clock"></i></span>
+                                            <input type="text" name="Entries[@i].FinishTime" value="@Model.Entries[i].FinishTime" 
+                                                   class="form-control bg-dark border-secondary text-white font-monospace" placeholder="00:45:30" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="Entries[@i].Notes" value="@Model.Entries[i].Notes" 
+                                               class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="e.g. Personal Best, Podium" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                    <span class="text-muted small">Total Finishers to be recorded: <strong>@Model.Entries.Count</strong></span>
+                    <button type="submit" class="btn btn-sport-primary px-4 py-2">
+                        <i class="bi bi-trophy-fill me-1 text-warning"></i> Calculate Ranks & Publish Official Results
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

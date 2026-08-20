@@ -1,0 +1,228 @@
+@model EventDetailViewModel
+@{
+    ViewData["Title"] = Model.Event.Title;
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-info text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">@Model.Event.Title</li>
+        </ol>
+    </nav>
+
+    <!-- Hero Card with Azure Blob Banner Image -->
+    <div class="rd-card overflow-hidden mb-4">
+        <div style="height: 380px; position: relative;">
+            <img src="@(string.IsNullOrEmpty(Model.Event.BannerImageUrl) ? "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=1600&q=80" : Model.Event.BannerImageUrl)" 
+                 class="w-100 h-100" style="object-fit: cover;" alt="@Model.Event.Title" />
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(10,17,40,0.95), transparent); padding: 2.5rem 2rem 1.5rem;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-info text-dark fw-bold text-uppercase px-3 py-1">
+                        @Model.Event.EventType Race
+                    </span>
+                    <span class="badge @(Model.Event.Status == "Completed" ? "bg-secondary" : "bg-success") px-3 py-1">
+                        @Model.Event.Status
+                    </span>
+                </div>
+                <h1 class="text-white fw-bold display-5 mb-1">@Model.Event.Title</h1>
+                <p class="text-info small mb-0"><i class="bi bi-person me-1"></i> Organised by @Model.Event.OrganiserName</p>
+            </div>
+        </div>
+        <div class="p-4 bg-dark border-top border-secondary">
+            <div class="row text-center text-md-start g-3">
+                <div class="col-md-3">
+                    <small class="text-muted text-uppercase d-block fw-bold">Date & Time</small>
+                    <span class="text-white fw-semibold"><i class="bi bi-calendar3 me-1 text-info"></i> @Model.Event.EventDate.ToString("f")</span>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted text-uppercase d-block fw-bold">Location</small>
+                    <span class="text-white fw-semibold"><i class="bi bi-geo-alt me-1 text-danger"></i> @Model.Event.Location</span>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted text-uppercase d-block fw-bold">Nominal Distance</small>
+                    <span class="text-white fw-semibold"><i class="bi bi-speedometer2 me-1 text-warning"></i> @Model.Event.DistanceKm km</span>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted text-uppercase d-block fw-bold">Athletes Registered</small>
+                    <span class="text-white fw-semibold"><i class="bi bi-people me-1 text-success"></i> @Model.Event.TotalEnrolments Competitors</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Description -->
+            <div class="rd-card p-4 mb-4">
+                <h4 class="text-white fw-bold mb-3"><i class="bi bi-card-text me-2 text-info"></i>Event Overview</h4>
+                <p class="text-light" style="line-height: 1.8; white-space: pre-line;">@Model.Event.Description</p>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="rd-card p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-white fw-bold mb-0"><i class="bi bi-diagram-3 me-2 text-info"></i>Available Race Categories</h4>
+                    <span class="badge bg-dark border border-secondary text-info">@Model.Event.Categories.Count Categories</span>
+                </div>
+
+                @if (Model.Event.Categories.Count == 0)
+                {
+                    <div class="alert alert-dark text-muted">
+                        No competition categories have been added for this race yet.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table rd-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Distance</th>
+                                    <th>Age Limits</th>
+                                    <th>Entry Fee</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in Model.Event.Categories)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong class="text-white">@cat.Name</strong>
+                                            @if (!string.IsNullOrEmpty(cat.Description))
+                                            {
+                                                <small class="d-block text-muted">@cat.Description</small>
+                                            }
+                                        </td>
+                                        <td>@(cat.DistanceKm.HasValue ? $"{cat.DistanceKm} km" : $"{Model.Event.DistanceKm} km")</td>
+                                        <td>
+                                            @if (cat.MinAge.HasValue || cat.MaxAge.HasValue)
+                                            {
+                                                <span>@(cat.MinAge ?? 0) - @(cat.MaxAge ?? 100) yrs</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">All Ages</span>
+                                            }
+                                        </td>
+                                        <td class="text-success fw-bold">R @cat.EntryFee.ToString("N2")</td>
+                                        <td>
+                                            @if (Model.CurrentUserRole == "Participant" && !Model.IsEnrolled && Model.Event.Status == "Upcoming")
+                                            {
+                                                <button type="button" class="btn btn-sport-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEnrol_@cat.CategoryId">
+                                                    Enter &rarr;
+                                                </button>
+
+                                                <!-- Confirmation Modal for Category -->
+                                                <div class="modal fade" id="modalEnrol_@cat.CategoryId" tabindex="-1">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content bg-dark border border-secondary text-white">
+                                                            <div class="modal-header border-secondary">
+                                                                <h5 class="modal-title fw-bold">Confirm Race Entry</h5>
+                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <form asp-action="Enter" method="post">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                                                                <input type="hidden" name="categoryId" value="@cat.CategoryId" />
+                                                                <div class="modal-body py-4">
+                                                                    <p>You are entering <strong>@Model.Event.Title</strong> under category <strong>@cat.Name</strong>.</p>
+                                                                    <div class="p-3 bg-black rounded border border-secondary mb-3">
+                                                                        <div class="d-flex justify-content-between mb-1">
+                                                                            <span class="text-muted">Nominal Distance:</span>
+                                                                            <span class="fw-bold">@(cat.DistanceKm ?? Model.Event.DistanceKm) km</span>
+                                                                        </div>
+                                                                        <div class="d-flex justify-content-between">
+                                                                            <span class="text-muted">Entry Fee:</span>
+                                                                            <span class="text-success fw-bold">R @cat.EntryFee.ToString("N2")</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p class="small text-muted mb-0">Your entry will immediately assign a unique race number (bib) and confirm your registration in the system.</p>
+                                                                </div>
+                                                                <div class="modal-footer border-secondary">
+                                                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" class="btn btn-sport-primary btn-sm px-3">Confirm Entry</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">&mdash;</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div class="col-lg-4">
+            <div class="rd-card p-4">
+                <h5 class="fw-bold text-white mb-3">Registration Status</h5>
+
+                @if (Model.IsEnrolled)
+                {
+                    <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+                        <div>
+                            <strong>You are Enrolled!</strong>
+                            <small class="d-block">Your bib number has been issued. Check My Enrolments.</small>
+                        </div>
+                    </div>
+                    <a asp-controller="Participant" asp-action="MyEvents" class="btn btn-sport-primary w-100 mb-2">
+                        View My Enrolments
+                    </a>
+                }
+                else if (Model.CurrentUserRole == "Participant")
+                {
+                    @if (Model.Event.Status == "Upcoming")
+                    {
+                        <p class="text-muted small">Choose a category in the table on the left to enter this race and receive your race bib.</p>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mb-0">
+                            Registration is closed. Event is @Model.Event.Status.
+                        </div>
+                    }
+                }
+                else if (Model.CurrentUserRole == "Organiser")
+                {
+                    <div class="alert alert-info small mb-3">
+                        <i class="bi bi-shield-check me-1"></i> You are viewing this event as an <strong>Organiser</strong>.
+                    </div>
+                    <a asp-controller="Organiser" asp-action="Enrolments" asp-route-eventId="@Model.Event.EventId" class="btn btn-outline-info w-100 mb-2">
+                        <i class="bi bi-people me-1"></i> View Enrolled Athletes
+                    </a>
+                    <a asp-controller="Organiser" asp-action="Categories" asp-route-eventId="@Model.Event.EventId" class="btn btn-outline-secondary text-white w-100 mb-2">
+                        <i class="bi bi-tag me-1"></i> Manage Categories
+                    </a>
+                    <a asp-controller="Organiser" asp-action="CaptureResults" asp-route-eventId="@Model.Event.EventId" class="btn btn-sport-primary w-100 mb-2">
+                        <i class="bi bi-trophy me-1"></i> Capture / Publish Results
+                    </a>
+                }
+                else
+                {
+                    <p class="text-muted small mb-3">Sign in with an athlete account to register for this event.</p>
+                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@($"/Events/Details/{Model.Event.EventId}")" class="btn btn-sport-primary w-100 mb-2">
+                        Sign In to Register
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary text-white w-100">
+                        Create New Account
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

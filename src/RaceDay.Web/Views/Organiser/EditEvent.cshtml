@@ -1,0 +1,107 @@
+@model EventFormViewModel
+@{
+    ViewData["Title"] = $"Edit Event: {Model.Title}";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Events" class="text-info text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">Edit: @Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="rd-card p-4 p-md-5">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary">
+                    <div>
+                        <h3 class="fw-bold text-white mb-0">Edit Race Event</h3>
+                        <p class="text-muted small mb-0">Update event logistics, schedule, and banner</p>
+                    </div>
+                    <span class="badge bg-info text-dark">ID: #@Model.EventId</span>
+                </div>
+
+                <form asp-action="EditEvent" asp-route-id="@Model.EventId" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="EventId" />
+                    <input type="hidden" asp-for="CurrentBannerUrl" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label text-light small fw-bold"></label>
+                        <input asp-for="Title" class="form-control bg-dark border-secondary text-white" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label text-light small fw-bold"></label>
+                        <textarea asp-for="Description" class="form-control bg-dark border-secondary text-white" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="EventDate" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="EventDate" class="form-control bg-dark border-secondary text-white" type="datetime-local" />
+                            <span asp-validation-for="EventDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Location" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="Location" class="form-control bg-dark border-secondary text-white" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label asp-for="DistanceKm" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="DistanceKm" class="form-control bg-dark border-secondary text-white" step="0.1" />
+                            <span asp-validation-for="DistanceKm" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="EventType" class="form-label text-light small fw-bold"></label>
+                            <select asp-for="EventType" class="form-select bg-dark border-secondary text-white">
+                                <option value="Run">Running (Run)</option>
+                                <option value="Walk">Walking (Walk)</option>
+                                <option value="Cycle">Cycling (Cycle)</option>
+                            </select>
+                            <span asp-validation-for="EventType" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Status" class="form-label text-light small fw-bold">Event Status</label>
+                            <select asp-for="Status" class="form-select bg-dark border-secondary text-white">
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="InProgress">InProgress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Current Banner & Replacement -->
+                    <div class="mb-4 p-3 bg-dark rounded border border-secondary">
+                        <label class="form-label text-light small fw-bold mb-2">Current Event Banner</label>
+                        @if (!string.IsNullOrEmpty(Model.CurrentBannerUrl))
+                        {
+                            <div class="mb-3">
+                                <img src="@Model.CurrentBannerUrl" class="rounded w-100" style="max-height: 180px; object-fit: cover;" alt="Current Banner" />
+                            </div>
+                        }
+                        <label asp-for="BannerImage" class="form-label text-light small fw-bold mb-1">
+                            <i class="bi bi-cloud-arrow-up text-info me-1"></i> Replace Banner Image (Azure Blob Storage)
+                        </label>
+                        <input asp-for="BannerImage" class="form-control bg-dark border-secondary text-white" type="file" accept="image/*" />
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                        <a asp-action="Events" class="btn btn-outline-secondary text-light">Cancel</a>
+                        <button type="submit" class="btn btn-sport-primary px-4">
+                            <i class="bi bi-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

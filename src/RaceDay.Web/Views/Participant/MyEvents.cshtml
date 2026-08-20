@@ -1,0 +1,95 @@
+@model List<EnrolmentDto>
+@{
+    ViewData["Title"] = "My Registered Events";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-ticket-perforated me-2 text-info"></i>My Event Enrolments</h2>
+            <p class="text-muted small mb-0">Track all your registered races, category entries, and assigned bib numbers</p>
+        </div>
+        <a asp-controller="Events" asp-action="Index" class="btn btn-sport-primary btn-sm">
+            <i class="bi bi-search me-1"></i> Enter Another Race
+        </a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="rd-card p-5 text-center">
+            <i class="bi bi-calendar-heart fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="text-white">You Have Not Entered Any Events Yet</h4>
+            <p class="text-muted mb-4">Browse our upcoming running, walking, and cycling competitions to secure your bib.</p>
+            <a asp-controller="Events" asp-action="Index" class="btn btn-sport-primary px-4">Browse Upcoming Events</a>
+        </div>
+    }
+    else
+    {
+        <div class="rd-card p-4">
+            <div class="table-responsive">
+                <table class="table rd-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Race Event</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Race Bib</th>
+                            <th>Enrolment Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-white fs-6">@item.EventTitle</strong>
+                                    <span class="badge bg-dark border border-secondary text-info ms-2 small">
+                                        @item.EventType
+                                    </span>
+                                </td>
+                                <td>
+                                    <i class="bi bi-calendar3 me-1 text-info"></i> @item.EventDate.ToString("ddd, dd MMM yyyy")
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">@item.CategoryName</span>
+                                    <small class="text-muted d-block">Fee: R @item.EntryFee.ToString("N2")</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-warning text-warning fs-6 px-3 py-1">
+                                        #@item.BibNumber
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Confirmed")
+                                    {
+                                        <span class="badge-status-confirmed">
+                                            <i class="bi bi-check-circle-fill"></i> Confirmed
+                                        </span>
+                                    }
+                                    else if (item.Status == "Pending")
+                                    {
+                                        <span class="badge-status-pending">
+                                            <i class="bi bi-hourglass-split"></i> Pending Payment
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status-cancelled">
+                                            <i class="bi bi-x-circle-fill"></i> Cancelled
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Events" asp-action="Details" asp-route-id="@item.EventId" class="btn btn-outline-info btn-sm">
+                                        Details &rarr;
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

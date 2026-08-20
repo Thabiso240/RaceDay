@@ -1,0 +1,153 @@
+@model CategoryFormViewModel
+@{
+    ViewData["Title"] = $"Categories - {Model.EventTitle}";
+    var eventObj = ViewBag.Event as EventDetailDto;
+    var categories = ViewBag.Categories as List<CategoryDto> ?? new();
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Events" class="text-info text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">Categories: @Model.EventTitle</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-diagram-3 me-2 text-info"></i>Manage Event Categories</h2>
+            <p class="text-muted small mb-0">Configure age tiers, sub-distances, and entry fees for: <strong>@Model.EventTitle</strong></p>
+        </div>
+        <a asp-action="Events" class="btn btn-outline-secondary btn-sm text-light">
+            <i class="bi bi-arrow-left me-1"></i> Back to Events
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Category Form -->
+        <div class="col-lg-5">
+            <div class="rd-card p-4">
+                <h4 class="fw-bold text-white mb-3"><i class="bi bi-plus-circle me-2 text-info"></i>Add New Category</h4>
+                <p class="text-muted small">E.g., Under 20, Senior, 10km, 21km, Open Men, Veteran.</p>
+
+                <form asp-action="AddCategory" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="EventId" />
+                    <input type="hidden" asp-for="EventTitle" />
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label text-light small fw-bold">Category Name</label>
+                        <input asp-for="Name" class="form-control bg-dark border-secondary text-white" placeholder="e.g. Senior Men 10km" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label text-light small fw-bold">Description / Rules</label>
+                        <input asp-for="Description" class="form-control bg-dark border-secondary text-white" placeholder="e.g. Ages 20 to 39, competitive wave" />
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label asp-for="MinAge" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="MinAge" class="form-control bg-dark border-secondary text-white" placeholder="18" />
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="MaxAge" class="form-label text-light small fw-bold"></label>
+                            <input asp-for="MaxAge" class="form-control bg-dark border-secondary text-white" placeholder="39" />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <label asp-for="DistanceKm" class="form-label text-light small fw-bold">Distance (km)</label>
+                            <input asp-for="DistanceKm" class="form-control bg-dark border-secondary text-white" placeholder="e.g. 10.0" step="0.1" />
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="EntryFee" class="form-label text-light small fw-bold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-success">R</span>
+                                <input asp-for="EntryFee" class="form-control bg-dark border-secondary text-white" step="1" />
+                            </div>
+                            <span asp-validation-for="EntryFee" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-sport-primary w-100">
+                        <i class="bi bi-plus-lg me-1"></i> Add Category
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Categories List -->
+        <div class="col-lg-7">
+            <div class="rd-card p-4">
+                <h4 class="fw-bold text-white mb-3">Existing Categories (@categories.Count)</h4>
+
+                @if (categories.Count == 0)
+                {
+                    <div class="alert alert-dark text-muted text-center py-4">
+                        <i class="bi bi-tag fs-2 d-block mb-2"></i>
+                        No categories have been added for this race yet. Use the form on the left to add categories.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table rd-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Ages</th>
+                                    <th>Distance</th>
+                                    <th>Entry Fee</th>
+                                    <th>Enrolled</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in categories)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong class="text-white">@cat.Name</strong>
+                                            @if (!string.IsNullOrEmpty(cat.Description))
+                                            {
+                                                <small class="d-block text-muted">@cat.Description</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (cat.MinAge.HasValue || cat.MaxAge.HasValue)
+                                            {
+                                                <span>@(cat.MinAge ?? 0) - @(cat.MaxAge ?? 100) yrs</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">All</span>
+                                            }
+                                        </td>
+                                        <td>@(cat.DistanceKm.HasValue ? $"{cat.DistanceKm} km" : "Default")</td>
+                                        <td class="text-success fw-bold">R @cat.EntryFee.ToString("N2")</td>
+                                        <td>
+                                            <span class="badge bg-dark border border-secondary text-info">
+                                                @cat.EnrolledCount
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <form asp-action="DeleteCategory" asp-route-id="@cat.CategoryId" asp-route-eventId="@Model.EventId" method="post" onsubmit="return confirm('Delete this category?');" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

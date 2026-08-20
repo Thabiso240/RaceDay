@@ -1,0 +1,62 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Athlete & Organiser Sign In";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="rd-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="rounded-circle bg-dark border border-info d-inline-flex p-3 mb-2">
+                        <i class="bi bi-person-lock fs-2 text-info"></i>
+                    </div>
+                    <h3 class="fw-bold text-white mb-1">Sign In to RaceDay</h3>
+                    <p class="text-muted small">Enter your account credentials to continue</p>
+                </div>
+
+                <form asp-action="Login" method="post" asp-route-returnUrl="@ViewBag.ReturnUrl">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label text-light small fw-bold">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-info"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control bg-dark border-secondary text-white" placeholder="athlete@example.com" autofocus />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label text-light small fw-bold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-info"><i class="bi bi-key"></i></span>
+                            <input asp-for="Password" class="form-control bg-dark border-secondary text-white" placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-sport-primary w-100 py-2 mb-3">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                    </button>
+
+                    <div class="text-center">
+                        <span class="text-muted small">Don't have an account yet?</span>
+                        <a asp-action="Register" class="text-info small fw-bold text-decoration-none ms-1">Register here</a>
+                    </div>
+                </form>
+
+                <!-- Helpful Demo Login Quick Reference -->
+                <div class="mt-4 pt-3 border-top border-secondary">
+                    <p class="text-muted small fw-bold mb-2"><i class="bi bi-info-circle me-1 text-warning"></i> Quick Demo Logins (Password: <code>Password123!</code>):</p>
+                    <div class="small text-muted">
+                        <div><strong>Organiser:</strong> <code>sarah.jenkins@raceday.co.za</code></div>
+                        <div><strong>Participant:</strong> <code>lerato.sithole@gmail.com</code></div>
+                        <div><strong>Jarred:</strong> <code>jarred.naidoo@varsitycollege.co.za</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

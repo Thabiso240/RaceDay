@@ -1,0 +1,112 @@
+@model EventBrowseViewModel
+@{
+    ViewData["Title"] = "Browse Sporting Events";
+}
+
+<div class="container py-4">
+    <!-- Header & Filter Bar -->
+    <div class="rd-card p-4 mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-5">
+                <h3 class="fw-bold text-white mb-1"><i class="bi bi-compass me-2 text-info"></i>Explore Race Calendar</h3>
+                <p class="text-muted small mb-0">Browse certified running, walking, and cycling challenges</p>
+            </div>
+            <div class="col-lg-7">
+                <form asp-action="Index" method="get" class="row g-2">
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-info"><i class="bi bi-search"></i></span>
+                            <input type="text" name="search" value="@Model.SearchQuery" class="form-control bg-dark border-secondary text-white" placeholder="Search event name, location..." />
+                        </div>
+                    </div>
+                    <div class="col-md-5 d-flex gap-2">
+                        <select name="type" class="form-select bg-dark border-secondary text-white">
+                            <option value="">All Disciplines</option>
+                            <option value="Run" selected="@(Model.SelectedType == "Run")">Running</option>
+                            <option value="Walk" selected="@(Model.SelectedType == "Walk")">Walking</option>
+                            <option value="Cycle" selected="@(Model.SelectedType == "Cycle")">Cycling</option>
+                        </select>
+                        <button type="submit" class="btn btn-sport-primary px-3">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Discipline Pills -->
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+            <a asp-action="Index" class="btn btn-sm @(string.IsNullOrEmpty(Model.SelectedType) ? "btn-info text-dark fw-bold" : "btn-outline-secondary text-light")">
+                All Races
+            </a>
+            <a asp-action="Index" asp-route-type="Run" class="btn btn-sm @(Model.SelectedType == "Run" ? "btn-info text-dark fw-bold" : "btn-outline-secondary text-light")">
+                <i class="bi bi-person-walking me-1"></i> Running
+            </a>
+            <a asp-action="Index" asp-route-type="Walk" class="btn btn-sm @(Model.SelectedType == "Walk" ? "btn-warning text-dark fw-bold" : "btn-outline-secondary text-light")">
+                <i class="bi bi-heart-pulse me-1"></i> Walking
+            </a>
+            <a asp-action="Index" asp-route-type="Cycle" class="btn btn-sm @(Model.SelectedType == "Cycle" ? "btn-danger text-white fw-bold" : "btn-outline-secondary text-light")">
+                <i class="bi bi-bicycle me-1"></i> Cycling
+            </a>
+        </div>
+    </div>
+
+    <!-- Events Grid -->
+    @if (Model.Events.Count == 0)
+    {
+        <div class="rd-card p-5 text-center">
+            <i class="bi bi-calendar-x fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="text-white">No Matching Events Found</h4>
+            <p class="text-muted">Try clearing your filters or search terms.</p>
+            <a asp-action="Index" class="btn btn-outline-info btn-sm">Clear Filters</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var ev in Model.Events)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="rd-card h-100 d-flex flex-column">
+                        <div class="event-banner-wrap">
+                            <img src="@(string.IsNullOrEmpty(ev.BannerImageUrl) ? "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=800&q=80" : ev.BannerImageUrl)" 
+                                 class="event-banner-img" alt="@ev.Title" />
+                            <span class="event-type-badge">
+                                @if (ev.EventType == "Run") { <i class="bi bi-person-walking me-1"></i> }
+                                else if (ev.EventType == "Walk") { <i class="bi bi-heart-pulse me-1"></i> }
+                                else { <i class="bi bi-bicycle me-1"></i> }
+                                @ev.EventType
+                            </span>
+                        </div>
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-dark border border-secondary text-info fw-bold">
+                                    <i class="bi bi-speedometer me-1"></i> @ev.DistanceKm km
+                                </span>
+                                <span class="badge @(ev.Status == "Completed" ? "bg-secondary" : "bg-success")">
+                                    @ev.Status
+                                </span>
+                            </div>
+                            <h5 class="text-white fw-bold mb-2">@ev.Title</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                @(ev.Description.Length > 120 ? ev.Description.Substring(0, 120) + "..." : ev.Description)
+                            </p>
+                            <div class="border-top border-secondary pt-3 mt-auto">
+                                <div class="mb-2 small text-muted">
+                                    <div><i class="bi bi-calendar3 me-1 text-info"></i> @ev.EventDate.ToString("f")</div>
+                                    <div class="text-truncate"><i class="bi bi-geo-alt me-1 text-danger"></i> @ev.Location</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="small text-muted">
+                                        <i class="bi bi-person me-1"></i> By @ev.OrganiserName
+                                    </span>
+                                    <a asp-action="Details" asp-route-id="@ev.EventId" class="btn btn-sport-primary btn-sm px-3">
+                                        View Details &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

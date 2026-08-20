@@ -1,0 +1,80 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="rd-card p-4 p-md-5">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary">
+                    <div>
+                        <h3 class="fw-bold text-white mb-1"><i class="bi bi-person-circle me-2 text-info"></i>Personal Profile</h3>
+                        <p class="text-muted small mb-0">Manage your athlete credentials and cloud avatar</p>
+                    </div>
+                    <div>
+                        @if (Model.Role == "Organiser")
+                        {
+                            <span class="badge-role-organiser">Organiser Account</span>
+                        }
+                        else
+                        {
+                            <span class="badge-role-participant">Athlete Account</span>
+                        }
+                    </div>
+                </div>
+
+                <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small"></div>
+
+                    <!-- Avatar Section -->
+                    <div class="d-flex align-items-center gap-4 mb-4 p-3 bg-dark rounded border border-secondary">
+                        @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                        {
+                            <img src="@Model.ProfilePictureUrl" class="rounded-circle border border-info shadow" width="80" height="80" style="object-fit: cover;" alt="Avatar" />
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white" style="width:80px; height:80px;">
+                                <i class="bi bi-person fs-1"></i>
+                            </div>
+                        }
+                        <div class="flex-grow-1">
+                            <label asp-for="ProfilePicture" class="form-label text-light small fw-bold">Update Profile Picture (Azure Blob Storage)</label>
+                            <input asp-for="ProfilePicture" class="form-control form-control-sm bg-dark border-secondary text-white" type="file" accept="image/*" />
+                            <small class="text-muted">JPG, PNG, or WebP up to 5MB.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label text-light small fw-bold"></label>
+                        <input asp-for="FullName" class="form-control bg-dark border-secondary text-white" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-light small fw-bold">Email Address (Registered)</label>
+                        <input value="@Model.Email" class="form-control bg-dark border-secondary text-muted" readonly disabled />
+                        <small class="text-muted">Email address cannot be changed.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="PhoneNumber" class="form-label text-light small fw-bold"></label>
+                        <input asp-for="PhoneNumber" class="form-control bg-dark border-secondary text-white" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                        <span class="text-muted small">
+                            <i class="bi bi-activity me-1 text-info"></i> Total System Activities: <strong>@Model.TotalActivities</strong>
+                        </span>
+                        <button type="submit" class="btn btn-sport-primary px-4">
+                            <i class="bi bi-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

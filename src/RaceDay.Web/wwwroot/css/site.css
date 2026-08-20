@@ -1,0 +1,307 @@
+/* RaceDay High-Energy Sporting Theme & UI Design */
+:root {
+  --rd-navy-deep: #0a1128;
+  --rd-navy-card: #141f36;
+  --rd-navy-border: #223354;
+  --rd-mint: #00f5d4;
+  --rd-cyan: #00bbf9;
+  --rd-amber: #ffb703;
+  --rd-coral: #ff0054;
+  --rd-white: #ffffff;
+  --rd-gray-light: #f1f5f9;
+  --rd-gray-text: #94a3b8;
+  --rd-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--rd-font);
+  background-color: #0b132b;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.rd-navbar {
+  background-color: rgba(10, 17, 40, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #1c2541;
+  padding: 0.8rem 0;
+}
+
+.rd-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--rd-white) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rd-brand-accent {
+  color: var(--rd-mint);
+}
+
+.rd-nav-link {
+  color: #cbd5e1 !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.rd-nav-link:hover, .rd-nav-link.active {
+  color: var(--rd-mint) !important;
+  background-color: rgba(0, 245, 212, 0.1);
+}
+
+/* Role Badges */
+.badge-role-organiser {
+  background: linear-gradient(135deg, #ff0054, #ff5400);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+}
+
+.badge-role-participant {
+  background: linear-gradient(135deg, #00bbf9, #00f5d4);
+  color: #0a1128;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+}
+
+/* Enrolment Status Badges */
+.badge-status-confirmed {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.badge-status-pending {
+  background-color: #f59e0b !important;
+  color: #000000 !important;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.badge-status-cancelled {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Cards & Surfaces */
+.rd-card {
+  background-color: var(--rd-navy-card);
+  border: 1px solid var(--rd-navy-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.rd-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 245, 212, 0.15);
+  border-color: rgba(0, 245, 212, 0.4);
+}
+
+.rd-card-header {
+  background: rgba(30, 41, 59, 0.6);
+  border-bottom: 1px solid var(--rd-navy-border);
+  padding: 1.25rem;
+}
+
+/* Buttons */
+.btn-sport-primary {
+  background: linear-gradient(135deg, #00f5d4 0%, #00bbf9 100%);
+  color: #0a1128 !important;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn-sport-primary:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 15px rgba(0, 245, 212, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-sport-danger {
+  background: linear-gradient(135deg, #ff0054, #d90429);
+  color: white !important;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  transition: all 0.25s ease;
+}
+
+.btn-sport-danger:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 15px rgba(255, 0, 84, 0.5);
+}
+
+.btn-sport-outline {
+  background: transparent;
+  color: var(--rd-mint) !important;
+  border: 2px solid var(--rd-mint);
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.55rem 1.3rem;
+  transition: all 0.25s ease;
+}
+
+.btn-sport-outline:hover {
+  background-color: var(--rd-mint);
+  color: #0a1128 !important;
+  box-shadow: 0 0 15px rgba(0, 245, 212, 0.4);
+}
+
+/* Hero Section */
+.rd-hero {
+  background: linear-gradient(135deg, rgba(10, 17, 40, 0.95), rgba(28, 37, 65, 0.9)),
+              url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=1600&q=80') center/cover no-repeat;
+  padding: 5rem 0;
+  border-bottom: 3px solid var(--rd-mint);
+  position: relative;
+}
+
+.rd-hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 40%, var(--rd-mint) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* KPI Tiles for Dashboard */
+.kpi-tile {
+  background: linear-gradient(145deg, #162238, #1c2b4a);
+  border-left: 5px solid var(--rd-mint);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.kpi-tile.kpi-coral {
+  border-left-color: var(--rd-coral);
+}
+
+.kpi-tile.kpi-gold {
+  border-left-color: var(--rd-amber);
+}
+
+.kpi-tile.kpi-cyan {
+  border-left-color: var(--rd-cyan);
+}
+
+.kpi-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.kpi-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--rd-gray-text);
+  font-weight: 600;
+}
+
+/* Event Banner Container */
+.event-banner-wrap {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.event-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.rd-card:hover .event-banner-img {
+  transform: scale(1.05);
+}
+
+.event-type-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(10, 17, 40, 0.85);
+  backdrop-filter: blur(4px);
+  color: var(--rd-mint);
+  font-weight: 800;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  border: 1px solid var(--rd-mint);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+/* Tables */
+.rd-table {
+  color: #e2e8f0;
+  background-color: transparent;
+  border-color: var(--rd-navy-border);
+}
+
+.rd-table th {
+  background-color: rgba(30, 41, 59, 0.8);
+  color: var(--rd-mint);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--rd-navy-border);
+  padding: 1rem;
+}
+
+.rd-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--rd-navy-border);
+}
+
+/* Footer */
+.rd-footer {
+  margin-top: auto;
+  background-color: #080d1d;
+  border-top: 1px solid var(--rd-navy-border);
+  padding: 2rem 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}

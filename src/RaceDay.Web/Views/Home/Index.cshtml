@@ -1,0 +1,143 @@
+@model EventBrowseViewModel
+@{
+    ViewData["Title"] = "Find Your Next Challenge";
+}
+
+<!-- Hero Sports Banner -->
+<section class="rd-hero text-center text-white">
+    <div class="container py-4">
+        <span class="badge bg-danger text-uppercase fw-bold px-3 py-2 mb-3">Live Race Management Platform</span>
+        <h1 class="rd-hero-title mb-3">CONQUER YOUR NEXT RACE</h1>
+        <p class="lead text-light mb-4 mx-auto" style="max-width: 650px;">
+            The premier platform for runners, walkers, and cyclists. Discover certified competitions, enter online with instant bib numbers, and track your verified finishing times.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a asp-controller="Events" asp-action="Index" class="btn btn-sport-primary btn-lg px-4">
+                <i class="bi bi-search me-2"></i> Browse All Races
+            </a>
+            @if (Context.Session.GetString("UserRole") == "Organiser")
+            {
+                <a asp-controller="Organiser" asp-action="CreateEvent" class="btn btn-sport-outline btn-lg px-4">
+                    <i class="bi bi-plus-circle me-2"></i> Create an Event
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-sport-outline btn-lg px-4">
+                    <i class="bi bi-person-plus me-2"></i> Create Athlete Account
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Disciplines Selection Cards -->
+<div class="container mt-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <a asp-controller="Events" asp-action="Index" asp-route-type="Run" class="text-decoration-none">
+                <div class="rd-card p-4 h-100">
+                    <div class="rounded-circle bg-dark d-inline-flex p-3 mb-3 border border-info">
+                        <i class="bi bi-person-walking fs-1 text-info"></i>
+                    </div>
+                    <h4 class="text-white fw-bold">RUNNING</h4>
+                    <p class="text-muted small">From 5km community dashes to 42.2km marathons and ultra-endurance challenges.</p>
+                    <span class="text-info fw-bold small">Explore Runs &rarr;</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a asp-controller="Events" asp-action="Index" asp-route-type="Walk" class="text-decoration-none">
+                <div class="rd-card p-4 h-100">
+                    <div class="rounded-circle bg-dark d-inline-flex p-3 mb-3 border border-warning">
+                        <i class="bi bi-heart-pulse fs-1 text-warning"></i>
+                    </div>
+                    <h4 class="text-white fw-bold">WALKING</h4>
+                    <p class="text-muted small">Family beach promenades, scenic health walks, and senior social fitness challenges.</p>
+                    <span class="text-warning fw-bold small">Explore Walks &rarr;</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a asp-controller="Events" asp-action="Index" asp-route-type="Cycle" class="text-decoration-none">
+                <div class="rd-card p-4 h-100">
+                    <div class="rounded-circle bg-dark d-inline-flex p-3 mb-3 border border-danger">
+                        <i class="bi bi-bicycle fs-1 text-danger"></i>
+                    </div>
+                    <h4 class="text-white fw-bold">CYCLING</h4>
+                    <p class="text-muted small">Closed-circuit road races, gravel trails, and high-speed multi-stage tours.</p>
+                    <span class="text-danger fw-bold small">Explore Rides &rarr;</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Upcoming Events -->
+<div class="container mt-5 pt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-fire text-danger me-2"></i>Upcoming Races</h2>
+            <p class="text-muted small mb-0">Certified sporting competitions scheduled across the region.</p>
+        </div>
+        <a asp-controller="Events" asp-action="Index" class="btn btn-outline-info btn-sm">
+            View All Events (@Model.Events.Count) <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    @if (Model.Events.Count == 0)
+    {
+        <div class="rd-card p-5 text-center">
+            <i class="bi bi-calendar-x fs-1 text-muted mb-3 d-block"></i>
+            <h5 class="text-white">No Upcoming Events Found</h5>
+            <p class="text-muted">Check back soon or create your own race event if you are an organiser.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var ev in Model.Events)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="rd-card h-100 d-flex flex-column">
+                        <div class="event-banner-wrap">
+                            <img src="@(string.IsNullOrEmpty(ev.BannerImageUrl) ? "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=800&q=80" : ev.BannerImageUrl)" 
+                                 class="event-banner-img" alt="@ev.Title" />
+                            <span class="event-type-badge">
+                                @if (ev.EventType == "Run") { <i class="bi bi-person-walking me-1"></i> }
+                                else if (ev.EventType == "Walk") { <i class="bi bi-heart-pulse me-1"></i> }
+                                else { <i class="bi bi-bicycle me-1"></i> }
+                                @ev.EventType
+                            </span>
+                        </div>
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-dark border border-secondary text-info">
+                                    <i class="bi bi-geo-alt me-1"></i> @ev.DistanceKm km
+                                </span>
+                                <span class="small text-muted">
+                                    <i class="bi bi-people me-1"></i> @ev.TotalEnrolments Athletes
+                                </span>
+                            </div>
+                            <h5 class="text-white fw-bold mb-2">@ev.Title</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                @(ev.Description.Length > 110 ? ev.Description.Substring(0, 110) + "..." : ev.Description)
+                            </p>
+                            <div class="border-top border-secondary pt-3 mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted d-block"><i class="bi bi-calendar3 me-1"></i> @ev.EventDate.ToString("ddd, dd MMM yyyy")</small>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 170px;"><i class="bi bi-pin-map me-1"></i> @ev.Location</small>
+                                    </div>
+                                    <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventId" class="btn btn-sport-primary btn-sm">
+                                        Details &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,126 @@
+@model List<EnrolmentDto>
+@{
+    var eventObj = ViewBag.Event as EventDetailDto;
+    ViewData["Title"] = $"Enrolments - {eventObj?.Title}";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Events" class="text-info text-decoration-none">Events</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">Enrolments: @eventObj?.Title</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold text-white mb-1"><i class="bi bi-people-fill me-2 text-info"></i>Enrolled Athletes Roster</h2>
+            <p class="text-muted small mb-0">Event: <strong>@eventObj?.Title</strong> &bull; Total Registered: <strong>@Model.Count</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="CaptureResults" asp-route-eventId="@eventObj?.EventId" class="btn btn-sport-primary btn-sm">
+                <i class="bi bi-trophy me-1"></i> Capture / Publish Results
+            </a>
+            <a asp-action="Events" class="btn btn-outline-secondary btn-sm text-light">
+                <i class="bi bi-arrow-left me-1"></i> Back to Events
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="rd-card p-5 text-center">
+            <i class="bi bi-people fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="text-white">No Athletes Have Enrolled in This Race Yet</h4>
+            <p class="text-muted">As participants register online, their bib numbers, categories, and payment statuses will be tracked here in real time.</p>
+        </div>
+    }
+    else
+    {
+        <div class="rd-card p-4">
+            <div class="table-responsive">
+                <table class="table rd-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Race Bib</th>
+                            <th>Participant Name</th>
+                            <th>Contact Email</th>
+                            <th>Category</th>
+                            <th>Registration Date</th>
+                            <th>Status Badge</th>
+                            <th>Status Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var athlete in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-dark border border-warning text-warning fs-6 px-3 py-1 font-monospace">
+                                        #@athlete.BibNumber
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong class="text-white">@athlete.ParticipantName</strong>
+                                </td>
+                                <td class="text-muted small">@athlete.ParticipantEmail</td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary text-info">
+                                        @athlete.CategoryName
+                                    </span>
+                                </td>
+                                <td class="small text-muted">@athlete.EnrolmentDate.ToString("dd MMM yyyy HH:mm")</td>
+                                <td>
+                                    @if (athlete.Status == "Confirmed")
+                                    {
+                                        <span class="badge-status-confirmed">
+                                            <i class="bi bi-check-circle-fill"></i> Confirmed
+                                        </span>
+                                    }
+                                    else if (athlete.Status == "Pending")
+                                    {
+                                        <span class="badge-status-pending">
+                                            <i class="bi bi-hourglass-split"></i> Pending
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status-cancelled">
+                                            <i class="bi bi-x-circle-fill"></i> Cancelled
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (athlete.Status == "Pending")
+                                    {
+                                        <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@athlete.EnrolmentId" />
+                                            <input type="hidden" name="eventId" value="@athlete.EventId" />
+                                            <input type="hidden" name="status" value="Confirmed" />
+                                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                                <i class="bi bi-check2"></i> Mark Confirmed
+                                            </button>
+                                        </form>
+                                    }
+                                    else if (athlete.Status == "Confirmed")
+                                    {
+                                        <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@athlete.EnrolmentId" />
+                                            <input type="hidden" name="eventId" value="@athlete.EventId" />
+                                            <input type="hidden" name="status" value="Pending" />
+                                            <button type="submit" class="btn btn-outline-warning btn-sm">
+                                                Set Pending
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
