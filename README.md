@@ -18,9 +18,9 @@
 
 *Note: Per assessment rules, all videos feature live voiceover demonstrations with code structure explanations (no AI voices).*
 
-* **Part 1 Video Link (Planning, ERD live walkthrough & SSMS script):** `https://youtu.be/UNLISTED_PART1_LINK`
-* **Part 2 Video Link (RESTful API, Swagger test, role rejection & Jarred's unit tests):** `https://youtu.be/UNLISTED_PART2_LINK`
-* **Part 3 Video Link (MVC Web App, Azure Blob upload, Docker containerisation & demo):** `https://youtu.be/UNLISTED_PART3_LINK`
+* **Part 1 Video Link (Planning, ERD live walkthrough & SSMS script):** 
+* **Part 2 Video Link (RESTful API, Swagger test, role rejection & Jarred's unit tests):** 
+* **Part 3 Video Link (MVC Web App, Azure Blob upload, Docker containerisation & demo):** https://1drv.ms/v/c/1888c9bf53f46ff6/IQB2oFKnuc6MSYZVAZTTGUdkAdae4Ryd8kpwpc5HQmFobXw?e=93jAxX
 
 ---
 
